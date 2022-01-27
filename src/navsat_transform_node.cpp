@@ -30,22 +30,24 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "robot_localization/navsat_transform.h"
-
+#include <bondcpp/bond.h>
 #include <ros/ros.h>
 
-int main(int argc, char **argv)
-{
+#include "robot_localization/navsat_transform.h"
+
+int main(int argc, char **argv) {
   ros::init(argc, argv, "navsat_transform_node");
 
   ros::NodeHandle nh;
   ros::NodeHandle nh_priv("~");
 
+  bond::Bond bond("navsat_transform_bond", "navsat_transform_id");
+  bond.start();
 
   RobotLocalization::NavSatTransform trans(nh, nh_priv);
   ros::spin();
 
+  bond.~Bond();
+
   return EXIT_SUCCESS;
 }
-
-
