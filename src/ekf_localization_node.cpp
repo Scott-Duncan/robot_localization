@@ -30,22 +30,31 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "robot_localization/ros_filter_types.h"
+#include <bondcpp/bond.h>
+#include <ros/ros.h>
 
 #include <cstdlib>
 
-#include <ros/ros.h>
+#include "robot_localization/ros_filter_types.h"
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
   ros::init(argc, argv, "ekf_navigation_node");
 
   ros::NodeHandle nh;
   ros::NodeHandle nh_priv("~");
 
+  std::string fusion_name{"global_odometry_fusion"};
+
+  nh_priv.param("fusion_name", fusion_name, fusion_name);
+
+  bond::Bond bond((fusion_name + "_bond"), (fusion_name + "_id"));
+  bond.start();
+
   RobotLocalization::RosEkf ekf(nh, nh_priv);
   ekf.initialize();
   ros::spin();
+
+  bond.~Bond();
 
   return EXIT_SUCCESS;
 }
